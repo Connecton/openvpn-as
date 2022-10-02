@@ -14,20 +14,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: "Set tag from Commit"
-      env:
-        COMMIT_VAR: ${{ contains(github.event.head_commit.message, '[commit var]') }}
+
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag openvpn-as:$COMMIT_VAR
+      run: docker build . --file Dockerfile --tag openvpn-as:$GITHUB_SHA
       
     - name: Tag the image as the latest one
-      run: docker --tag openvpn-as:$COMMIT_VAR openvpn-as:latest
+      run: docker --tag openvpn-as:$GITHUB_SHA openvpn-as:latest
       
     - name: Login to dockerhub
       run: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD
       
     - name: Push the actual image
-      run: docker push openvpn-as:$COMMIT_VAR
+      run: docker push openvpn-as:$GITHUB_SHA
       
     - name: Push latest tag
       run: docker push openvpn-as:latest
